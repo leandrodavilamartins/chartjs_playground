@@ -47,6 +47,7 @@
                 <!--Data variables -->  
                 <script>
                     const data = [];
+                    const selectedProduct = 'lisina hcl 99%';
                 </script>
 
                 <!--DB initialization -->
@@ -80,8 +81,14 @@
                             return data.push(doc.data());
                         })
                         console.log(data);
+
+                        let selectAllOfProduct = data.filter( d => {
+                            return d.nome == selectedProduct;
+                        })
+
+                        console.log(selectAllOfProduct);
                         // sort the data 
-                        let sortedDates = _.sortBy(data, 'data');
+                        let sortedDates = _.sortBy(selectAllOfProduct, 'data');
                         console.log(sortedDates);
                         //convert to timestamps 
                         let timestamps = sortedDates.map( d => {
@@ -95,6 +102,13 @@
                         //create an array of unique local date strings 
                         let uniqueDates = _.uniqBy(datesFormatted);
                         console.log(uniqueDates);
+                        
+                        let uniqueDealer = _.uniqBy(selectAllOfProduct, 'fornecedor');
+                        console.log(uniqueDealer);
+                        
+                        let fornecedores = uniqueDealer.map( d => {
+                            return d.fornecedor;
+                        })
                         
 
                         createChart(uniqueDates);
