@@ -7,10 +7,43 @@
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha256-qXBd/EfAdjOA2FGrGAG+b3YBn2tn5A6bhz+LSgYD96k=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" integrity="sha256-ErZ09KkZnzjpqcane4SCyyHsKAXMvID9/xwbl/Aq1pc=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/2.3.1/luxon.min.js" integrity="sha512-Nw0Abk+Ywwk5FzYTxtB70/xJRiCI0S2ORbXI3VBlFpKJ44LM6cW2WxIIolyKEOxOuMI90GIfXdlZRJepu7cczA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 </head>
 <body>
                 <canvas id="myChart" width="3" height="1"></canvas>
+
+                <script>
+                    function createChart(labels){
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                                    {
+                                        label: 'Republicanos',
+                                        data: [1,3,5],
+                                        borderColor: 'red'
+                                    },
+                                    {
+                                        label:'Democratas',
+                                        data: [1,4,5],
+                                        borderColor: 'blue'
+                                    }]
+                                },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    }
+       
+                </script>
+
                 <!--Data variables -->  
                 <script>
                     const data = [];
@@ -37,7 +70,7 @@
 					const auth = firebase.auth();
 				</script>
 				
-				<!-- <script src="./auth.js"></script> -->
+				<script src="./auth.js"></script>
 
                 <!--DB calling -->
                 <script>
@@ -47,36 +80,28 @@
                             return data.push(doc.data());
                         })
                         console.log(data);
+                        // sort the data 
+                        let sortedDates = _.sortBy(data, 'data');
+                        console.log(sortedDates);
+                        //convert to timestamps 
+                        let timestamps = sortedDates.map( d => {
+                            return d.data;
+                        })
+                        //convert timestamps to local date strings 
+                        let datesFormatted = timestamps.map( d => {
+                            return luxon.DateTime.fromMillis(d).toUTC().toLocaleString();
+                        })
+                        console.log(datesFormatted);
+                        //create an array of unique local date strings 
+                        let uniqueDates = _.uniqBy(datesFormatted);
+                        console.log(uniqueDates);
+                        
+
+                        createChart(uniqueDates);
+                        
                     })
                 </script>
 
-                <script>
-                    const ctx = document.getElementById('myChart').getContext('2d');
-                    const myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: [0,10,30],
-                        datasets: [
-                                    {
-                                        label: 'Republicanos',
-                                        data: [1,3,5],
-                                        borderColor: 'red'
-                                    },
-                                    {
-                                        label:'Democratas',
-                                        data: [1,4,5],
-                                        borderColor: 'blue'
-                                    }]
-                                },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                    }
-                                }
-                            }
-                        });
-                </script>
 
 </body>
 </html>
